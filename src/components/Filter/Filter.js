@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import contactsActions from '../../redux/contactsActions';
+import { LabelStyled, InputStyled } from './Filter.styles';
 
-import { LabelStyled, InputStyled } from './Input.styles';
-
-export const Input = ({
+const Filter = ({
   id,
   type,
   label,
@@ -33,14 +34,14 @@ export const Input = ({
   );
 };
 
-Input.defaultProps = {
+Filter.defaultProps = {
   type: 'text',
   placeholder: '',
   title: '',
   required: false,
 };
 
-Input.propTypes = {
+Filter.propTypes = {
   id: PropTypes.string.isRequired,
   type: PropTypes.string,
   label: PropTypes.string.isRequired,
@@ -51,3 +52,13 @@ Input.propTypes = {
   title: PropTypes.string,
   required: PropTypes.bool,
 };
+
+const mapStateToProps = state => ({
+  value: state.contactList.filter,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onChange: evt => dispatch(contactsActions.changeFilter(evt.target.value)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Filter);

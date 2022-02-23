@@ -1,13 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
-
+import contactsActions from '../../redux/contactsActions';
+import { connect } from 'react-redux';
 import {
   ContactListStyled,
   ContactItemStyled,
   RemoveBtnStyled,
 } from "./ContactList.styles";
 
-export const ContactList = ({ contacts, onRemoveContact }) => {
+ const ContactList = ({ contacts, onRemoveContact }) => {
   return (
     <ContactListStyled>
       {contacts.map(({ id, name, number }) => (
@@ -32,3 +33,21 @@ ContactList.propTypes = {
   ).isRequired,
   onRemoveContact: PropTypes.func.isRequired,
 };
+
+const getContacts = (allContacts, filter) => {
+  const normalizeFilter = filter.toLowerCase();
+
+  return allContacts.filter(contact =>
+    contact.name.toLocaleLowerCase().includes(normalizeFilter),
+  );
+};
+
+const mapStateToProps = ({ contactList: { contacts, filter } }) => {
+  return { contacts: getContacts(contacts, filter) };
+};
+
+const mapDispatchToProps = dispatch => ({
+  onRemoveContact: id => dispatch(contactsActions.removeContact(id)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContactList);

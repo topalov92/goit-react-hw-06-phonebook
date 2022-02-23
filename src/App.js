@@ -1,83 +1,42 @@
-import { useState, useEffect } from 'react';
-
+import { connect } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-
 import { Container } from './components/Container/Container';
-import { ContactForm } from './components/ContactForm/ContactForm';
-import { ContactList } from './components/ContactList/ContactList';
+import  ContactForm  from './components/ContactForm/ContactForm';
+import  ContactList  from './components/ContactList/ContactList';
 import { Notification } from './components/Notification/Notification';
-import { Input } from './components/Input/Input';
-
+import Filter from './components/Filter/Filter';
 import { H1Styled, H2Styled } from './App.styles';
 
-const App = () => {
-  const storageContacts = window.localStorage.getItem('contacts');
-  const parsedContacts = JSON.parse(storageContacts);
-
-  const [contacts, setContacts] = useState(parsedContacts ?? []);
-  const [filter, setFilter] = useState('');
-
-  const getContacts = () => {
-    return contacts.filter(contact =>
-      contact.name.toLocaleLowerCase().includes(filter.toLowerCase()),
-    );
-  };
-
-  const addContact = newContact => {
-    if (
-      contacts.some(
-        contact => contact.name.toLowerCase() === newContact.name.toLowerCase(),
-      )
-    ) {
-      alert(
-        'You have contact with this name, please remove old contact and create new',
-      );
-      return;
-    }
-
-    setContacts([newContact, ...contacts]);
-  };
-
-  const removeContact = data => {
-    setContacts(contacts.filter(contact => contact.id !== data));
-  };
-
-  const changeFilterValue = evt => {
-    setFilter(evt.target.value);
-  };
-
-  useEffect(() => {
-    window.localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
-  const mainContacts = getContacts();
-
+const App = ({ contacts }) => {
+  
   return (
     <Container>
       <H1Styled>PhoneBook</H1Styled>
       <H2Styled>Add contact</H2Styled>
-      <ContactForm onSubmit={addContact} />
+      <ContactForm />
 
       <H2Styled>Contacts</H2Styled>
-      {mainContacts.length > 0 ? (
+      {contacts.length > 0 ? (
         <>
-          {/* Filter */}
-          <Input
+           <Filter
             id={uuidv4()}
             label={'Find contacts by name'}
             placeholder={'Boris Britva'}
             name={'search'}
-            value={filter}
-            onChange={changeFilterValue}
-          />
+            />
 
-          <ContactList contacts={mainContacts} onRemoveContact={removeContact} />
+          <ContactList />
         </>
       ) : (
-        <Notification text={'You don`t have any contacts'} />
+        <Notification />
       )}
     </Container>
   );
 };
 
-export default App;
+const mapStateToProps = state => ({
+  contacts: state.contactList.contacts,
+});
+
+
+export default connect(mapStateToProps)(App);
