@@ -40,9 +40,20 @@ import {
     setNumber('');
   };
 
-  const submitForm = evt => {
+    const submitForm = evt => {
     evt.preventDefault();
-    onSubmit({id, name, number});
+    if (
+      contacts.some(
+        contact =>
+          contact.name.toLowerCase() === evt.target.name.value.toLowerCase(),
+      )
+    ) {
+      alert(
+        'You have contact with this name, please remove old contact and create new',
+      );
+      return;
+    }
+    onSubmit({ id, name, number });
     resetForm();
   };
    
